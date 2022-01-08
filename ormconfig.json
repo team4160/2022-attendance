@@ -2,7 +2,7 @@
   "name": "default",
   "host": "localhost",
   "port": 27017,
-  "database": "test-db",
+  "database": "attendance",
   "logging": true,
   "useUnifiedTopology": true,
   "useNewUrlParser": true

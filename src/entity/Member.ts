@@ -4,17 +4,18 @@ import { BaseEntity, Column, Entity, ObjectIdColumn } from 'typeorm';
 
 @ObjectType()
 @Entity()
-export class User extends BaseEntity {
+export class Member extends BaseEntity {
   @Field(() => ID)
   @ObjectIdColumn()
   _id!: ObjectId;
 
-  @Field()
-  @Column('text', { unique: true })
-  email!: string;
+  @Field(() => ID)
+  @ObjectIdColumn()
+  organizationId!: ObjectId;
 
+  @Field(() => ID)
   @Column()
-  password!: string;
+  uniqueIndex!: number;
 
   @Field()
   @Column()
@@ -24,10 +25,7 @@ export class User extends BaseEntity {
   @Column()
   lastName!: string;
 
-  @Field()
+  @Field(() => [ ID ])
   @Column()
-  username!: string;
-
-  @Column('bool', { default: false })
-  confirmed!: boolean;
+  rolesIds!: ObjectId[];
 }

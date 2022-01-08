@@ -4,30 +4,20 @@ import { BaseEntity, Column, Entity, ObjectIdColumn } from 'typeorm';
 
 @ObjectType()
 @Entity()
-export class User extends BaseEntity {
+export class Role extends BaseEntity {
   @Field(() => ID)
   @ObjectIdColumn()
   _id!: ObjectId;
 
-  @Field()
-  @Column('text', { unique: true })
-  email!: string;
-
-  @Column()
-  password!: string;
+  @Field(() => ID)
+  @ObjectIdColumn()
+  organizationId!: ObjectId;
 
   @Field()
   @Column()
-  firstName!: string;
+  name!: string;
 
   @Field()
   @Column()
-  lastName!: string;
-
-  @Field()
-  @Column()
-  username!: string;
-
-  @Column('bool', { default: false })
-  confirmed!: boolean;
+  color!: string;
 }
