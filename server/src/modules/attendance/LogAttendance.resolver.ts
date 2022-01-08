@@ -133,6 +133,11 @@ export class LogAttendanceResolver {
           `${signOut.getHours()}:${String(signOut.getMinutes()).padStart(2, '0')}`;
 
         attendanceData[ i ][ horizontalIndex ] = `${signInTime},${signOutTime}`;
+        break;
+      }
+      if (i === attendanceData.length - 1) {
+        const newMemberData = Array(attendanceData[ 0 ].length - 1).fill('');
+        attendanceData.push([member.firstName, ...newMemberData]);
       }
     }
     await updateSheet('RawData!A1:AAA500', attendanceData);
