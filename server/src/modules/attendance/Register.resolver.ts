@@ -57,10 +57,16 @@ export class RegisterResolver {
       member.firstName.toLowerCase(),
       member.lastName.toLowerCase()
     ];
+
+    // let newIdentifications = identifications.toString()
+    // // while (newIdentifications.match(/,[^ ]/g).length > 0) {
+    // //   newIdentifications = newIdentifications.replace(/, /g, ',');
+    // // }
+
     currentValues.push([
       identifierPack.toString(),
       `${member.firstName} ${member.lastName}`,
-      identifications.toString()
+      identifications.toString().replace(/,/g, ', ')
     ]);
     updateSheet(range, currentValues);
     return member;

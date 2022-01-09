@@ -14,13 +14,13 @@ import { findInTrie } from './trie';
 
 @Resolver()
 export class LogAttendanceResolver {
-  @Mutation(() => Boolean)
+  @Mutation(() => String)
   async logAttendance(
     @Arg('data') {
       identifier,
       attendancePeriodId
     }: LogAttendanceInput
-  ): Promise<boolean> {
+  ): Promise<string> {
     const attendancePeriod = await AttendancePeriod.findOne({
       where: {
         _id: new ObjectId(attendancePeriodId)
@@ -31,8 +31,8 @@ export class LogAttendanceResolver {
         _id: attendancePeriod?.organizationId
       }
     });
-    if (!attendancePeriod) return false;
-    if (!organization) return false;
+    if (!attendancePeriod) return 'Error';
+    if (!organization) return 'Error';
 
     // Add attendace date to attendace period
     const beginningOfToday = new Date().setHours(0, 0, 0, 0);
@@ -62,7 +62,7 @@ export class LogAttendanceResolver {
     const memberIdentifier = findInTrie(
       JSON.parse(organization.memberIdentificationTrieJSON), identifier
     );
-    if (memberIdentifier === null) return false;
+    if (memberIdentifier === null) return 'NF';
     const memberId = new ObjectId(memberIdentifier);
     let existingMemberAttendanceData = await MemberAttendanceData.findOne({
       where: {
@@ -81,7 +81,7 @@ export class LogAttendanceResolver {
         _id: memberId
       }
     });
-    if (!member) return false;
+    if (!member) return 'NF';
 
     // Sign if it is first run of the day, else sign out
     const lastRecordedAttendance = new Date(
@@ -142,6 +142,6 @@ export class LogAttendanceResolver {
     }
     await updateSheet('RawData!A1:AAA500', attendanceData);
 
-    return true;
+    return member.firstName;
   }
 }

@@ -88,7 +88,7 @@ export const startServer =
       await member.save();
       const identifications = identities[ i + 1 ][ 2 ].split(',');
       for (const identification of identifications) {
-        addToTrie(trie, identification, member._id.toString());
+        addToTrie(trie, identification.trim(), member._id.toString());
       }
     }
     await Organization.update({ _id: org._id }, {
@@ -141,8 +141,22 @@ export const startServer =
     app = express();
     app.use(cors());
 
-    app.get('/', (_, res) => {
-      res.status(200).send('OK');
+    app.get('/', async (_, res) => {
+      const org = await Organization.findOne({
+        where: {
+          teamNumber: 4160
+        }
+      }) as Organization;
+
+      const attendancePeriod = await AttendancePeriod.findOne({
+        where: {
+          organizationId: org._id
+        }
+      }) as AttendancePeriod;
+      res.status(200).send({
+        orgId: org._id,
+        attendancePeriodId: attendancePeriod._id
+      });
     });
     app.get('/user/confirm/:confirmId', async (req, res) => {
       const { confirmId } = req.params;
