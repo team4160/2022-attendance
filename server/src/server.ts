@@ -112,6 +112,7 @@ export const startServer =
           new Date(attendanceData[ 0 ][ j ])
         );
         const dateData = attendanceData[ i ][ j ];
+        if (dateData === '') { continue; }
         const signInDateData = dateData.split(',')[ 0 ];
         const signOutDateData = dateData.split(',')[ 1 ];
         const signInHours = signInDateData.split(':')[ 0 ];
@@ -161,7 +162,10 @@ export const startServer =
     app.get('/user/confirm/:confirmId', async (req, res) => {
       const { confirmId } = req.params;
       const userId = await redis.get(confirmId);
-      if (!userId) res.status(404).send('Invalid id');
+      if (!userId) {
+        res.status(404).send('Invalid id');
+        return;
+      }
 
       await redis.del(confirmId);
       await User.update({ _id: new ObjectId(userId) }, { confirmed: true });
