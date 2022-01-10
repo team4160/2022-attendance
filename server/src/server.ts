@@ -20,6 +20,10 @@ import { toCapitalCase } from './utils';
 import { createSchema } from './utils/createSchema';
 import ormconfig from '~escape-src/ormconfig.json';
 import testOrmconfig from '~escape-src/test-ormconfig.json';
+import http from 'http';
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
 
 let connection: Connection;
 let expressServer: Server;
@@ -112,7 +116,7 @@ export const startServer =
           new Date(attendanceData[ 0 ][ j ])
         );
         const dateData = attendanceData[ i ][ j ];
-        if (dateData === '') { continue; }
+        if (typeof dateData === 'undefined' || dateData.trim() === '') { continue; }
         const signInDateData = dateData.split(',')[ 0 ];
         const signOutDateData = dateData.split(',')[ 1 ];
         const signInHours = signInDateData.split(':')[ 0 ];
@@ -142,7 +146,9 @@ export const startServer =
     app = express();
     app.use(cors());
 
-    app.get('/', async (_, res) => {
+
+
+    app.get('/credentials', async (_, res) => {
       const org = await Organization.findOne({
         where: {
           teamNumber: 4160
@@ -174,7 +180,31 @@ export const startServer =
     apolloServer.applyMiddleware({ app });
 
     const port = testMode ? env.TEST_PORT : env.PORT;
-    expressServer = app.listen(port, () => {
+
+    http
+      .createServer(function (req, res) {
+        res.writeHead(301, {Location: 'https://' + req.headers['host'] + req.url});
+        res.end();
+      })
+      .listen(80);
+      console.log(__dirname);
+      app.use(express.static(path.join(__dirname, 'attendance')));
+        app.use(express.static(__dirname));
+
+        app.get('/', (req, res) => {
+          res.send('OK');
+        })
+
+
+      const credentials = {
+  key: fs.readFileSync("/etc/letsencrypt/live/attendance.matthewlin.dev/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/attendance.matthewlin.dev/cert.pem"),
+  ca: fs.readFileSync("/etc/letsencrypt/live/attendance.matthewlin.dev/chain.pem"),
+};
+
+const server = https.createServer(credentials, app);
+
+    expressServer = server.listen(port, () => {
       console.log(`App is listening on port ${port}`);
     });
   };

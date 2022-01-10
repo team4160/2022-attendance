@@ -45,7 +45,7 @@ const App: () => JSX.Element = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      axios.get(serverAddress).then((result) => {
+      axios.get(`${serverAddress}/credentials`).then((result) => {
         if (result.status === 200) {
           setStatusText('Server connected');
           serverCredentials = result.data;
@@ -56,7 +56,7 @@ const App: () => JSX.Element = () => {
       }).catch(() => {
         setStatusText('Server address not valid');
       });
-    }, 3000);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [ serverAddress ]);
